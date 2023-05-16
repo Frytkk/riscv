@@ -1,0 +1,53 @@
+	.globl main
+	.data
+prompt:	.asciz "Enter String:\n"
+header:	.asciz "\nOutput:\n"
+buf:	.space 256
+
+	.text
+main:
+	li	a7, 4
+	la	a0, prompt
+	ecall
+	
+	li	a7, 8
+	la	a0, buf
+	li	a1, 256
+	ecall
+	
+	la	t0, buf		# forward iterator
+	la 	t1, buf		# reverse iterator
+
+strlen:	
+	lbu	t2, (t1)	# char holder
+	beqz	t2, counted
+	addi	t1, t1, 1
+	b	strlen
+counted:
+	
+	la	t0, buf
+	addi 	t1, t1, -1	# quickfix, ommits NULL char
+loop:
+	lbu	t3, (t0)	# char holder
+	lbu	t4, (t1)	# char holder
+	sb	t3, (t1)
+	sb	t4, (t0)
+	
+	addi	t0, t0, 1
+	addi	t1, t1, -1
+	
+	bge	t0, t1, end
+	b	loop
+end:
+	li	a7, 4
+	la	a0, header
+	ecall	
+	li	a7, 4
+	la	a0, buf
+	ecall
+	li	a7, 10
+	ecall
+	
+	
+	
+	
